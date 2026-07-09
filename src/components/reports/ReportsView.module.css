@@ -57,19 +57,18 @@
 
 .sampleBannerAction {
   flex-shrink: 0;
-  padding: 6px 12px;
-  border: 1px solid transparent;
+  padding: 6px 14px;
+  border: none;
   border-radius: 8px;
   font-size: 13px;
-  font-weight: 500;
-  color: var(--purple-primary);
-  background: transparent;
-  transition: background 0.15s ease, color 0.15s ease;
+  font-weight: 600;
+  color: white;
+  background: var(--purple-primary);
+  transition: opacity 0.15s ease;
 }
 
 .sampleBannerAction:hover {
-  background: rgba(255, 255, 255, 0.65);
-  color: var(--text-primary);
+  opacity: 0.9;
 }
 
 .sampleBadge {
@@ -275,7 +274,7 @@
 }
 
 .chartGridLine {
-  stroke: var(--border-default);
+  stroke: rgba(19, 18, 19, 0.06);
   stroke-width: 1;
 }
 
