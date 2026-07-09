@@ -30,6 +30,7 @@
   border: none;
   border-radius: 0;
   border-bottom: 1px dashed var(--purple-border);
+  background: #fbf8fb;
 }
 
 .samplePanelBody {
@@ -44,7 +45,7 @@
   padding: 10px 14px;
   border: 1px dashed var(--purple-border);
   border-radius: 10px;
-  background: var(--purple-light);
+  background: #fbf8fb;
 }
 
 .sampleBannerContent {
@@ -284,12 +285,7 @@
   font-size: 11px;
 }
 
-.chartLine {
-  stroke: var(--purple-primary);
-  stroke-width: 2;
-}
-
-.chartDot {
+.chartBar {
   fill: var(--purple-primary);
 }
 
@@ -303,11 +299,11 @@
   color: var(--text-secondary);
 }
 
-.chartLegendLine {
-  width: 18px;
-  height: 2px;
+.chartLegendBar {
+  width: 12px;
+  height: 12px;
   background: var(--purple-primary);
-  border-radius: 1px;
+  border-radius: 2px;
 }
 
 .tableControls {

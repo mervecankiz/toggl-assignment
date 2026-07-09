@@ -3,6 +3,7 @@ import { scheduleTasks } from '../lib/scheduleTasks';
 import { createTask, draftId } from '../lib/draftIds';
 import {
   DEFAULT_RUNNING_TASK,
+  EXPLORE_TOGGL_TASK,
   type AppAction,
   type AppState,
   type ExploreTimer,
@@ -18,14 +19,14 @@ const emptyDraft = (): SetupDraft => ({
 
 const EXPLORE_TIMER_DEMO_OFFSET_MS = 0;
 
-function createExploreTimer(showCard = false): ExploreTimer {
+function createExploreTimer(options: { showCard?: boolean; description?: string } = {}): ExploreTimer {
   const startedAt = Date.now();
   return {
     running: true,
     startedAt,
     elapsed: EXPLORE_TIMER_DEMO_OFFSET_MS,
-    showCard,
-    description: DEFAULT_RUNNING_TASK,
+    showCard: options.showCard ?? false,
+    description: options.description ?? DEFAULT_RUNNING_TASK,
   };
 }
 
@@ -107,7 +108,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         confirmedTasks: action.payload.tasks,
         scheduledBlocks: action.payload.blocks,
         skippedOnboarding: false,
-        exploreTimer: createExploreTimer(),
+        exploreTimer: createExploreTimer({ description: EXPLORE_TOGGL_TASK }),
       };
 
     case 'SKIP':
@@ -117,7 +118,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         confirmedTasks: [],
         scheduledBlocks: [],
         skippedOnboarding: true,
-        exploreTimer: createExploreTimer(),
+        exploreTimer: createExploreTimer({ description: EXPLORE_TOGGL_TASK }),
       };
 
     case 'ACCEPT_BLOCK':
@@ -161,7 +162,10 @@ function reducer(state: AppState, action: AppAction): AppState {
     case 'START_EXPLORE_TIMER':
       return {
         ...state,
-        exploreTimer: createExploreTimer(action.payload?.showCard ?? false),
+        exploreTimer: createExploreTimer({
+          showCard: action.payload?.showCard ?? false,
+          description: action.payload?.description ?? DEFAULT_RUNNING_TASK,
+        }),
       };
 
     case 'STOP_EXPLORE_TIMER':

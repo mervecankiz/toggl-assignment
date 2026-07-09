@@ -13,19 +13,24 @@ function ReportsChart({ dailyPoints }: { dailyPoints: { shortLabel: string; logg
   const innerWidth = width - padding.left - padding.right;
   const innerHeight = CHART_HEIGHT - padding.top - padding.bottom;
   const maxMs = chartMaxHours * 3_600_000;
+  const barCount = dailyPoints.length || 1;
+  const slotWidth = innerWidth / barCount;
+  const barWidth = Math.min(44, slotWidth * 0.55);
 
-  const points = dailyPoints.map((point, index) => {
-    const x =
-      padding.left +
-      (dailyPoints.length === 1 ? innerWidth / 2 : (index / (dailyPoints.length - 1)) * innerWidth);
+  const bars = dailyPoints.map((point, index) => {
     const ratio = Math.min(point.loggedMs / maxMs, 1);
-    const y = padding.top + innerHeight - ratio * innerHeight;
-    return { x, y, label: point.shortLabel };
-  });
+    const barHeight = ratio * innerHeight;
+    const x = padding.left + index * slotWidth + (slotWidth - barWidth) / 2;
+    const y = padding.top + innerHeight - barHeight;
 
-  const linePath = points
-    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-    .join(' ');
+    return {
+      x,
+      y,
+      width: barWidth,
+      height: point.loggedMs > 0 ? Math.max(barHeight, 3) : 0,
+      label: point.shortLabel,
+    };
+  });
 
   return (
     <div className={styles.chartWrap}>
@@ -48,28 +53,32 @@ function ReportsChart({ dailyPoints }: { dailyPoints: { shortLabel: string; logg
           );
         })}
 
-        {points.length > 0 && linePath && (
-          <path d={linePath} className={styles.chartLine} fill="none" />
-        )}
-
-        {points.map((point) => (
-          <circle key={point.label} cx={point.x} cy={point.y} r={4} className={styles.chartDot} />
+        {bars.map((bar) => (
+          <rect
+            key={bar.label}
+            x={bar.x}
+            y={bar.y}
+            width={bar.width}
+            height={bar.height}
+            rx={4}
+            className={styles.chartBar}
+          />
         ))}
 
-        {points.map((point) => (
+        {bars.map((bar) => (
           <text
-            key={`${point.label}-x`}
-            x={point.x}
+            key={`${bar.label}-x`}
+            x={bar.x + bar.width / 2}
             y={CHART_HEIGHT - 6}
             className={styles.chartXLabel}
             textAnchor="middle"
           >
-            {point.label}
+            {bar.label}
           </text>
         ))}
       </svg>
       <div className={styles.chartLegend}>
-        <span className={styles.chartLegendLine} />
+        <span className={styles.chartLegendBar} />
         Logged time
       </div>
     </div>

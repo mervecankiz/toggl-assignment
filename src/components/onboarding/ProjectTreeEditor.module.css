@@ -87,16 +87,12 @@
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--border-default);
   animation: fadeIn 0.3s ease;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
+  transition: background 0.15s ease;
 }
 
-.taskRow:hover,
-.taskRow:has(+ .taskRow:hover) {
-  border-bottom-color: transparent;
+.taskRow + .taskRow {
+  border-top: 1px solid var(--border-default);
 }
 
 .taskRow:hover {
@@ -106,10 +102,6 @@
 .taskRow:hover .taskInput:not(:disabled) {
   cursor: text;
   color: var(--text-primary);
-}
-
-.taskRow:last-of-type {
-  border-bottom: none;
 }
 
 .taskMarker {

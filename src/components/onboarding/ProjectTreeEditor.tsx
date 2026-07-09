@@ -61,7 +61,10 @@ export function ProjectTreeEditor({
 
   return (
     <div className={styles.editor}>
-      {draft.projects.map((project, pi) => (
+      {draft.projects.map((project, pi) => {
+        if (isStreaming && project.tasks.length === 0) return null;
+
+        return (
         <div key={project.id} className={styles.project}>
           <div className={styles.projectHeader}>
             <span className={styles.projectLabel}>Project</span>
@@ -120,8 +123,11 @@ export function ProjectTreeEditor({
             )}
           </ul>
         </div>
-      ))}
-      {isStreaming && <span className={styles.streamingCursor} />}
+        );
+      })}
+      {isStreaming && draft.projects.some((project) => project.tasks.length > 0) && (
+        <span className={styles.streamingCursor} aria-hidden="true" />
+      )}
       {!isStreaming && (
         <div className={styles.editorActions}>
           <button type="button" className={styles.addProjectBtn} onClick={addProject}>

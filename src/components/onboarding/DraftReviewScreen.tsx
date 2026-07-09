@@ -32,7 +32,9 @@ export function DraftReviewScreen() {
     suggestedFirstTask: { project: '', task: '', reason: '' },
   };
 
-  const hasContent = draft.projects.length > 0;
+  const hasContent = isStreaming
+    ? draft.projects.some((project) => project.tasks.length > 0)
+    : draft.projects.length > 0;
 
   return (
     <div className={styles.container}>

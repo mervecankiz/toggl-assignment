@@ -51,6 +51,7 @@ export interface ExploreTimer {
 }
 
 export const DEFAULT_RUNNING_TASK = 'Untitled task';
+export const EXPLORE_TOGGL_TASK = 'Explore Toggl';
 
 export interface AppState {
   step: FlowStep;
@@ -85,7 +86,7 @@ export type AppAction =
   | { type: 'RESCHEDULE_BLOCK'; payload: { id: string; start: Date; end: Date } }
   | { type: 'ADD_SCHEDULED_BLOCK'; payload: ScheduledBlock }
   | { type: 'SET_ACTIVE_VIEW'; payload: AppView }
-  | { type: 'START_EXPLORE_TIMER'; payload?: { showCard?: boolean } }
+  | { type: 'START_EXPLORE_TIMER'; payload?: { showCard?: boolean; description?: string } }
   | { type: 'STOP_EXPLORE_TIMER' }
   | { type: 'SET_EXPLORE_TIMER_CARD'; payload: boolean }
   | { type: 'DISMISS_REPORTS_SAMPLE_DATA' }
