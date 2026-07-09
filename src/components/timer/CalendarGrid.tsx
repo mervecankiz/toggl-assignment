@@ -31,22 +31,20 @@ function isSameDay(a: Date, b: Date): boolean {
   );
 }
 
-function getCurrentWeekDays(count: number): Date[] {
-  const now = new Date();
-  const monday = new Date(now);
-  const day = monday.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  monday.setDate(monday.getDate() + diff);
-  monday.setHours(0, 0, 0, 0);
+function getCenteredDaysAroundToday(): Date[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  return Array.from({ length: count }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d;
+  return Array.from({ length: 5 }, (_, i) => {
+    const day = new Date(today);
+    day.setDate(today.getDate() + (i - 2));
+    return day;
   });
 }
 
-const LIVE_DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+function getDayName(date: Date): string {
+  return date.toLocaleDateString('en-US', { weekday: 'short' });
+}
 
 export function CalendarGrid() {
   const { state } = useAppState();
@@ -55,7 +53,7 @@ export function CalendarGrid() {
   const weekDays = useMemo(
     () =>
       useLiveBlocks
-        ? getCurrentWeekDays(5)
+        ? getCenteredDaysAroundToday()
         : DEMO_WEEK_DAYS.map((day) => new Date(2026, 6, day.date)),
     [useLiveBlocks],
   );
@@ -99,17 +97,16 @@ export function CalendarGrid() {
           </div>
           <div className={styles.headerDays}>
             {useLiveBlocks
-              ? weekDays.map((day, i) => {
+              ? weekDays.map((day) => {
                   const isToday = isSameDay(day, today);
                   return (
-                    <div key={i} className={styles.headerDay}>
+                    <div key={day.toDateString()} className={styles.headerDay}>
                       <div
                         className={`${styles.dayNumber} ${isToday ? styles.dayNumberToday : ''}`}
                       >
                         {day.getDate()}
                       </div>
-                      <div className={styles.dayName}>{LIVE_DAY_NAMES[i]}</div>
-                      <div className={styles.dayLogged}>– / –</div>
+                      <div className={styles.dayName}>{getDayName(day)}</div>
                     </div>
                   );
                 })
@@ -121,11 +118,6 @@ export function CalendarGrid() {
                       {day.date}
                     </div>
                     <div className={styles.dayName}>{day.name}</div>
-                    <div
-                      className={`${styles.dayLogged} ${day.isLogged ? styles.dayLoggedActive : ''}`}
-                    >
-                      {day.logged}
-                    </div>
                   </div>
                 ))}
           </div>

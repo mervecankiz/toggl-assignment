@@ -302,7 +302,7 @@
 }
 
 .navItem:hover:not(.navItemActive) {
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(19, 18, 19, 0.06);
   color: var(--text-primary);
 }
 

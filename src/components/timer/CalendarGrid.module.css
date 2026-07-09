@@ -69,17 +69,6 @@
   color: var(--text-secondary);
 }
 
-.dayLogged {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.dayLoggedActive {
-  color: var(--purple-primary);
-  font-weight: 500;
-}
-
 .hourCell {
   height: 60px;
   border-bottom: 1px solid var(--border-default);

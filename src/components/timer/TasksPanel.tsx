@@ -1,7 +1,28 @@
+import { useMemo } from 'react';
+import { useAppState } from '../../hooks/useAppState';
 import { DEMO_TASKS } from '../../lib/demoTimerView';
 import styles from './TasksPanel.module.css';
 
 export function TasksPanel() {
+  const { state } = useAppState();
+  const { confirmedTasks, skippedOnboarding } = state;
+
+  const tasks = useMemo(() => {
+    if (confirmedTasks.length > 0) {
+      return confirmedTasks.map((task) => ({
+        id: task.id,
+        name: task.name,
+      }));
+    }
+    if (skippedOnboarding) {
+      return DEMO_TASKS.map((name, index) => ({
+        id: `demo-${index}`,
+        name,
+      }));
+    }
+    return [];
+  }, [confirmedTasks, skippedOnboarding]);
+
   return (
     <aside className={styles.panel}>
       <div className={styles.header}>
@@ -21,9 +42,9 @@ export function TasksPanel() {
       </div>
 
       <div className={styles.body}>
-        {DEMO_TASKS.map((task) => (
-          <div key={task} className={styles.taskCard}>
-            {task}
+        {tasks.map((task) => (
+          <div key={task.id} className={styles.taskCard}>
+            {task.name}
           </div>
         ))}
       </div>
