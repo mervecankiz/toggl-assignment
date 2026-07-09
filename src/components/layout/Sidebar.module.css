@@ -1,0 +1,386 @@
+.sidebar {
+  display: flex;
+  height: 100%;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border-default);
+  background: transparent;
+}
+
+.toolbar {
+  width: 48px;
+  background: var(--bg-sidebar-toolbar);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.toolbarTop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 32px;
+}
+
+.logoWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32px;
+}
+
+.logoIconWrap {
+  width: 32px;
+  height: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.logoIcon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.badge20 {
+  background: var(--purple-light);
+  border: 1px solid var(--purple-border);
+  border-radius: 8px;
+  height: 16px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--purple-primary);
+  text-transform: uppercase;
+  letter-spacing: -0.22px;
+  line-height: 16px;
+}
+
+.workLink {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: default;
+}
+
+.workIcon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.toggleBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: default;
+}
+
+.toggleIcon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.toolbarBottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatarGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatarBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: default;
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9.9px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.288px;
+}
+
+.trialPill {
+  background: var(--purple-primary);
+  color: white;
+  border-radius: 8px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: default;
+}
+
+.iconBtn img {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.navigation {
+  width: 200px;
+  background: var(--bg-sidebar-nav);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.workspaceBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px 10px 16px;
+  border: none;
+  background: none;
+  width: 100%;
+  min-height: 64px;
+  text-align: left;
+  cursor: default;
+}
+
+.workspaceNameWrap {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.workspaceName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  width: 100%;
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.sections {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.section {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.275px;
+  line-height: 16px;
+}
+
+.sectionToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.sectionToggle:hover {
+  background: rgba(19, 18, 19, 0.04);
+}
+
+.sectionChevron {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  display: block;
+  transform: rotate(-90deg);
+  opacity: 0;
+  transition:
+    transform 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.sidebar:hover .sectionChevron {
+  opacity: 1;
+}
+
+.sectionChevronOpen {
+  transform: rotate(0deg);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+  height: 32px;
+  width: 184px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navItem:hover:not(.navItemActive) {
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--text-primary);
+}
+
+.navItemActive {
+  background: var(--purple-light);
+  color: var(--purple-primary);
+  font-weight: 600;
+}
+
+.navItemActive:hover {
+  background: var(--purple-light);
+}
+
+.navIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.proBadge {
+  margin-left: auto;
+  background: var(--purple-primary);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 16px;
+  flex-shrink: 0;
+}
+
+.starIcon {
+  margin-left: auto;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.footer {
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.footerBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+  height: 32px;
+  width: 184px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+.footerIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.upgradeBtn {
+  color: var(--purple-primary);
+}
+
+.upgradeIcon {
+  width: 20px;
+  height: 20px;
+}

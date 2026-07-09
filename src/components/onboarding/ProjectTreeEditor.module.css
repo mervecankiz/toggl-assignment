@@ -1,0 +1,285 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.project {
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+.projectHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg-sidebar-nav);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.projectLabel {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border-default);
+}
+
+.projectNameInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  outline: none;
+  min-width: 0;
+  cursor: text;
+}
+
+.projectNameInput:disabled,
+.taskInput:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.deleteProject {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.deleteProject:hover {
+  background: #fafafa;
+}
+
+.taskList {
+  list-style: none;
+  padding: 10px 0 14px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.taskRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-default);
+  animation: fadeIn 0.3s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.taskRow:hover,
+.taskRow:has(+ .taskRow:hover) {
+  border-bottom-color: transparent;
+}
+
+.taskRow:hover {
+  background: #fafafa;
+}
+
+.taskRow:hover .taskInput:not(:disabled) {
+  cursor: text;
+  color: var(--text-primary);
+}
+
+.taskRow:last-of-type {
+  border-bottom: none;
+}
+
+.taskMarker {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--border-default);
+  border-radius: 3px;
+  background: white;
+}
+
+.taskInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  outline: none;
+  min-width: 0;
+  cursor: text;
+}
+
+.taskInput:focus {
+  color: var(--text-primary);
+}
+
+.taskInput:disabled {
+  cursor: not-allowed;
+}
+
+.deleteTask {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.deleteTask:hover {
+  background: rgba(19, 18, 19, 0.06);
+}
+
+.addTaskRow {
+  padding: 2px 14px 0;
+  margin-top: 2px;
+}
+
+.addTaskBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #fafafa;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.addTaskPlus {
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.addTaskBtn:hover {
+  background: #f0f0f0;
+}
+
+.addProjectBtn {
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--purple-primary);
+  font-weight: 500;
+  width: fit-content;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.addProjectBtn:hover {
+  text-decoration: underline;
+}
+
+.editorActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.confirmBtn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background: var(--purple-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.confirmIcon {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 1;
+  transition:
+    max-width 0.2s ease,
+    opacity 0.15s ease,
+    margin-left 0.15s ease;
+}
+
+.confirmBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.confirmBtn:hover:not(:disabled) .confirmIcon {
+  max-width: 1em;
+  opacity: 1;
+  margin-left: 6px;
+}
+
+.confirmBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.streamingCursor {
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  background: var(--purple-primary);
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

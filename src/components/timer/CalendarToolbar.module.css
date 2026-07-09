@@ -1,0 +1,107 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px 6px 12px;
+  border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
+  height: 49px;
+}
+
+.weekNav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.navBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 18px;
+}
+
+.navBtn:hover {
+  background: var(--bg-hover);
+}
+
+.weekLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.weekDot {
+  color: var(--text-muted);
+}
+
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.daysBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 10px;
+  height: 32px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-right: 4px;
+}
+
+.chevron {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.viewBtns {
+  display: flex;
+  gap: 2px;
+}
+
+.viewBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.viewBtn:hover {
+  background: var(--bg-hover);
+}
+
+.viewBtnActive {
+  background: var(--purple-light);
+  color: var(--purple-primary);
+}
+
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.iconBtn:hover {
+  background: var(--bg-hover);
+}
