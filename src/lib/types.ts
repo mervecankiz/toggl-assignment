@@ -38,16 +38,23 @@ export interface ScheduledBlock {
   color: string;
 }
 
+export type AppView = 'timer' | 'reports';
+
 export type FlowStep = 'input' | 'draft' | 'timer';
 
 export interface ExploreTimer {
   running: boolean;
   startedAt: number;
   elapsed: number;
+  showCard: boolean;
+  description: string;
 }
+
+export const DEFAULT_RUNNING_TASK = 'Untitled task';
 
 export interface AppState {
   step: FlowStep;
+  activeView: AppView;
   inputText: string;
   draft: SetupDraft | null;
   visibleDraft: SetupDraft | null;
@@ -56,6 +63,7 @@ export interface AppState {
   scheduledBlocks: ScheduledBlock[];
   exploreTimer: ExploreTimer;
   skippedOnboarding: boolean;
+  reportsSampleDataEnabled: boolean;
 }
 
 export type StreamEvent =
@@ -74,6 +82,13 @@ export type AppAction =
   | { type: 'SKIP' }
   | { type: 'ACCEPT_BLOCK'; payload: string }
   | { type: 'DECLINE_BLOCK'; payload: string }
+  | { type: 'RESCHEDULE_BLOCK'; payload: { id: string; start: Date; end: Date } }
+  | { type: 'ADD_SCHEDULED_BLOCK'; payload: ScheduledBlock }
+  | { type: 'SET_ACTIVE_VIEW'; payload: AppView }
+  | { type: 'START_EXPLORE_TIMER'; payload?: { showCard?: boolean } }
+  | { type: 'STOP_EXPLORE_TIMER' }
+  | { type: 'SET_EXPLORE_TIMER_CARD'; payload: boolean }
+  | { type: 'DISMISS_REPORTS_SAMPLE_DATA' }
   | { type: 'TICK_TIMER'; payload: number };
 
 export const PROJECT_COLORS = [

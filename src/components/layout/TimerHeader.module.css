@@ -30,6 +30,11 @@
   color: var(--text-muted);
 }
 
+.descriptionInputRunning {
+  color: var(--purple-primary);
+  font-weight: 500;
+}
+
 .pills {
   display: flex;
   gap: 8px;
@@ -87,6 +92,10 @@
   text-align: right;
 }
 
+.timerDisplayRunning {
+  color: var(--purple-primary);
+}
+
 .playBtn {
   width: 36px;
   height: 36px;
@@ -99,6 +108,13 @@
   font-size: 14px;
 }
 
-.playBtn svg {
-  margin-left: 2px;
+.playBtnRunning {
+  background: #e74c3c;
+}
+
+.projectTag {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
 }

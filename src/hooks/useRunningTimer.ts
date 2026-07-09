@@ -8,13 +8,15 @@ export function useRunningTimer() {
   useEffect(() => {
     if (!exploreTimer.running) return;
 
-    const interval = setInterval(() => {
+    const tick = () => {
       dispatch({
         type: 'TICK_TIMER',
         payload: Date.now() - exploreTimer.startedAt,
       });
-    }, 1000);
+    };
 
+    tick();
+    const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, [exploreTimer.running, exploreTimer.startedAt, dispatch]);
 }

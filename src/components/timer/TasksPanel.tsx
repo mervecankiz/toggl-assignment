@@ -1,27 +1,43 @@
-import { useMemo } from 'react';
+import { useMemo, useState, type DragEvent } from 'react';
 import { useAppState } from '../../hooks/useAppState';
+import { TASK_DRAG_TYPE } from '../../lib/calendarDrag';
 import { DEMO_TASKS } from '../../lib/demoTimerView';
 import styles from './TasksPanel.module.css';
+
+const DEMO_PROJECT = 'Marketing campaign';
 
 export function TasksPanel() {
   const { state } = useAppState();
   const { confirmedTasks, skippedOnboarding } = state;
+  const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
 
   const tasks = useMemo(() => {
     if (confirmedTasks.length > 0) {
       return confirmedTasks.map((task) => ({
         id: task.id,
         name: task.name,
+        project: task.project,
       }));
     }
     if (skippedOnboarding) {
       return DEMO_TASKS.map((name, index) => ({
         id: `demo-${index}`,
         name,
+        project: DEMO_PROJECT,
       }));
     }
     return [];
   }, [confirmedTasks, skippedOnboarding]);
+
+  const handleDragStart = (event: DragEvent<HTMLDivElement>, taskId: string) => {
+    event.dataTransfer.setData(TASK_DRAG_TYPE, taskId);
+    event.dataTransfer.effectAllowed = 'copyMove';
+    setDraggingTaskId(taskId);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingTaskId(null);
+  };
 
   return (
     <aside className={styles.panel}>
@@ -43,7 +59,13 @@ export function TasksPanel() {
 
       <div className={styles.body}>
         {tasks.map((task) => (
-          <div key={task.id} className={styles.taskCard}>
+          <div
+            key={task.id}
+            className={`${styles.taskCard} ${draggingTaskId === task.id ? styles.taskCardDragging : ''}`}
+            draggable
+            onDragStart={(event) => handleDragStart(event, task.id)}
+            onDragEnd={handleDragEnd}
+          >
             {task.name}
           </div>
         ))}

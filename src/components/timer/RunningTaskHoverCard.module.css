@@ -1,0 +1,141 @@
+.card {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  background: white;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(19, 18, 19, 0.12);
+  padding: 12px 14px 14px;
+  z-index: 20;
+  cursor: default;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.runningLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e74c3c;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stopBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #e74c3c;
+  color: white;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+.descriptionPlaceholder {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+.pills {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.pill {
+  padding: 4px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: white;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.metaDot {
+  color: var(--text-muted);
+}
+
+.elapsed {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.elapsedIcon {
+  font-size: 13px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--purple-primary);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.saveKbd {
+  font-size: 11px;
+  opacity: 0.85;
+}

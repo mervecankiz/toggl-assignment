@@ -1,0 +1,434 @@
+.view {
+  flex: 1;
+  overflow-y: auto;
+  background: white;
+  padding: 24px 28px 32px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.samplePanel {
+  border: 1px dashed var(--purple-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+}
+
+.samplePanel .sampleBanner {
+  margin-bottom: 0;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px dashed var(--purple-border);
+}
+
+.samplePanelBody {
+  padding: 16px 18px 18px;
+}
+
+.sampleBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  border: 1px dashed var(--purple-border);
+  border-radius: 10px;
+  background: var(--purple-light);
+}
+
+.sampleBannerContent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sampleBannerAction {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--purple-primary);
+  background: transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sampleBannerAction:hover {
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--text-primary);
+}
+
+.sampleBadge {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: white;
+  border: 1px solid var(--purple-border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--purple-primary);
+}
+
+.sampleBannerText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.exportBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: white;
+}
+
+.star {
+  color: #d4a017;
+  font-size: 12px;
+}
+
+.tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid var(--border-default);
+  margin-bottom: 16px;
+}
+
+.tab {
+  padding: 0 0 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tab:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.tabActive {
+  color: var(--purple-primary);
+  border-bottom-color: var(--purple-primary);
+  font-weight: 500;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.weekNav {
+  display: flex;
+  align-items: center;
+}
+
+.navBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 18px;
+}
+
+.navBtn:hover {
+  background: var(--bg-hover);
+}
+
+.weekLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.weekDot {
+  color: var(--text-muted);
+}
+
+.filtersBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.filterIcon {
+  font-size: 14px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metricCard {
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: white;
+}
+
+.metricLabel {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.metricValue {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.metricSub {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.chartSection,
+.tableSection,
+.timeLogsPlaceholder {
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  padding: 16px 18px 18px;
+  margin-bottom: 20px;
+  background: white;
+}
+
+.chartHeader,
+.tableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chartSelect,
+.tableSelect {
+  padding: 4px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.chartWrap {
+  width: 100%;
+}
+
+.chartSvg {
+  width: 100%;
+  height: auto;
+}
+
+.chartGridLine {
+  stroke: var(--border-default);
+  stroke-width: 1;
+}
+
+.chartAxisLabel,
+.chartXLabel {
+  fill: var(--text-muted);
+  font-size: 11px;
+}
+
+.chartLine {
+  stroke: var(--purple-primary);
+  stroke-width: 2;
+}
+
+.chartDot {
+  fill: var(--purple-primary);
+}
+
+.chartLegend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.chartLegendLine {
+  width: 18px;
+  height: 2px;
+  background: var(--purple-primary);
+  border-radius: 1px;
+}
+
+.tableControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tableControlLabel {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-default);
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-default);
+  color: var(--text-primary);
+}
+
+.centerCell {
+  text-align: center;
+}
+
+.expandIcon {
+  color: var(--text-muted);
+  margin-right: 6px;
+}
+
+.rowCount {
+  color: var(--text-muted);
+}
+
+.emptyRow {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 24px 12px !important;
+}
+
+.tableFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pagination {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-secondary);
+}
+
+.timeLogsPlaceholder {
+  padding: 20px;
+}
+
+.placeholderText {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 8px 0 16px;
+}
+
+.timeLogRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-default);
+  font-size: 14px;
+}
+
+.timeLogClient {
+  margin-left: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.timeLogMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+
+.timeLogAmount {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+@media (max-width: 1100px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -45,6 +45,11 @@
   min-width: 100px;
   border-right: 1px solid var(--border-default);
   position: relative;
+  overflow: visible;
+}
+
+.dayColumnDropTarget {
+  background: rgba(168, 76, 157, 0.04);
 }
 
 .dayNumber {

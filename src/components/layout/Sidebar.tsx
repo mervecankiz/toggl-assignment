@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useAppState } from '../../hooks/useAppState';
+import { formatDuration } from '../../lib/scheduleTasks';
+import type { AppView } from '../../lib/types';
 import styles from './Sidebar.module.css';
 import { WorkIcon } from './WorkIcon';
 
@@ -9,7 +12,9 @@ const ICONS = {
   help: '/sidebar/help-icon.svg',
   chevron: '/sidebar/chevron-icon.svg',
   timer: '/sidebar/timer-icon.svg',
+  timerActive: '/sidebar/timer-icon-active.svg',
   reports: '/sidebar/reports-icon.svg',
+  reportsActive: '/sidebar/reports-icon-active.svg',
   projects: '/sidebar/projects-icon.svg',
   tasks: '/sidebar/tasks-icon.svg',
   timeline: '/sidebar/timeline-icon.svg',
@@ -21,13 +26,19 @@ const ICONS = {
   upgrade: '/sidebar/upgrade-icon.svg',
 } as const;
 
+function getNavIconSrc(icon: keyof typeof ICONS, isActive: boolean): string {
+  if (isActive && icon === 'timer') return ICONS.timerActive;
+  if (isActive && icon === 'reports') return ICONS.reportsActive;
+  return ICONS[icon];
+}
+
 const NAV_SECTIONS: {
   label: string;
   defaultOpen?: boolean;
   items: {
     label: string;
     icon: keyof typeof ICONS;
-    active?: boolean;
+    view?: AppView;
     star?: boolean;
     pro?: boolean;
   }[];
@@ -35,12 +46,12 @@ const NAV_SECTIONS: {
   {
     label: 'Track',
     defaultOpen: true,
-    items: [{ label: 'Timer', icon: 'timer', active: true }],
+    items: [{ label: 'Timer', icon: 'timer', view: 'timer' }],
   },
   {
     label: 'Analyze',
     defaultOpen: true,
-    items: [{ label: 'Reports', icon: 'reports' }],
+    items: [{ label: 'Reports', icon: 'reports', view: 'reports' }],
   },
   {
     label: 'Plan',
@@ -62,6 +73,8 @@ const NAV_SECTIONS: {
 ];
 
 export function Sidebar() {
+  const { state, dispatch } = useAppState();
+  const { activeView, exploreTimer } = state;
   const [openSections, setOpenSections] = useState(() =>
     Object.fromEntries(
       NAV_SECTIONS.map((section) => [section.label, section.defaultOpen ?? true]),
@@ -71,6 +84,12 @@ export function Sidebar() {
   const toggleSection = (label: string) => {
     setOpenSections((current) => ({ ...current, [label]: !current[label] }));
   };
+
+  const timerBadge =
+    exploreTimer.running || exploreTimer.elapsed > 0
+      ? formatDuration(exploreTimer.elapsed)
+      : null;
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.toolbar}>
@@ -136,19 +155,32 @@ export function Sidebar() {
                   />
                 </button>
                 {isOpen &&
-                  section.items.map((item) => (
-                    <div
-                      key={item.label}
-                      className={`${styles.navItem} ${item.active ? styles.navItemActive : ''}`}
-                    >
-                      <img src={ICONS[item.icon]} alt="" className={styles.navIcon} />
-                      <span>{item.label}</span>
-                      {item.star && (
-                        <img src={ICONS.star} alt="Paid feature" className={styles.starIcon} />
-                      )}
-                      {item.pro && <span className={styles.proBadge}>Pro</span>}
-                    </div>
-                  ))}
+                  section.items.map((item) => {
+                    const isActive = item.view ? activeView === item.view : false;
+
+                    return (
+                      <button
+                        key={item.label}
+                        type="button"
+                        className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+                        onClick={() => {
+                          if (item.view) {
+                            dispatch({ type: 'SET_ACTIVE_VIEW', payload: item.view });
+                          }
+                        }}
+                      >
+                        <img src={getNavIconSrc(item.icon, isActive)} alt="" className={styles.navIcon} />
+                        <span className={styles.navLabel}>{item.label}</span>
+                        {item.label === 'Timer' && timerBadge && (
+                          <span className={styles.timerBadge}>{timerBadge}</span>
+                        )}
+                        {item.star && (
+                          <img src={ICONS.star} alt="Paid feature" className={styles.starIcon} />
+                        )}
+                        {item.pro && <span className={styles.proBadge}>Pro</span>}
+                      </button>
+                    );
+                  })}
               </div>
             );
           })}

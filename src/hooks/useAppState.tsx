@@ -1,13 +1,14 @@
 import { useReducer, createContext, useContext, type ReactNode } from 'react';
 import { scheduleTasks } from '../lib/scheduleTasks';
 import { createTask, draftId } from '../lib/draftIds';
-import type {
-  AppAction,
-  AppState,
-  ExploreTimer,
-  SetupDraft,
-  StreamEvent,
-  Task,
+import {
+  DEFAULT_RUNNING_TASK,
+  type AppAction,
+  type AppState,
+  type ExploreTimer,
+  type SetupDraft,
+  type StreamEvent,
+  type Task,
 } from '../lib/types';
 
 const emptyDraft = (): SetupDraft => ({
@@ -15,14 +16,16 @@ const emptyDraft = (): SetupDraft => ({
   suggestedFirstTask: { project: '', task: '', reason: '' },
 });
 
-const EXPLORE_TIMER_DEMO_OFFSET_MS = 42_000;
+const EXPLORE_TIMER_DEMO_OFFSET_MS = 0;
 
-function createExploreTimer(): ExploreTimer {
-  const startedAt = Date.now() - EXPLORE_TIMER_DEMO_OFFSET_MS;
+function createExploreTimer(showCard = false): ExploreTimer {
+  const startedAt = Date.now();
   return {
     running: true,
     startedAt,
     elapsed: EXPLORE_TIMER_DEMO_OFFSET_MS,
+    showCard,
+    description: DEFAULT_RUNNING_TASK,
   };
 }
 
@@ -131,6 +134,57 @@ function reducer(state: AppState, action: AppAction): AppState {
         scheduledBlocks: state.scheduledBlocks.filter((b) => b.id !== action.payload),
       };
 
+    case 'RESCHEDULE_BLOCK':
+      return {
+        ...state,
+        scheduledBlocks: state.scheduledBlocks.map((b) =>
+          b.id === action.payload.id
+            ? {
+                ...b,
+                start: action.payload.start,
+                end: action.payload.end,
+                status: 'accepted' as const,
+              }
+            : b,
+        ),
+      };
+
+    case 'ADD_SCHEDULED_BLOCK':
+      return {
+        ...state,
+        scheduledBlocks: [...state.scheduledBlocks, action.payload],
+      };
+
+    case 'SET_ACTIVE_VIEW':
+      return { ...state, activeView: action.payload };
+
+    case 'START_EXPLORE_TIMER':
+      return {
+        ...state,
+        exploreTimer: createExploreTimer(action.payload?.showCard ?? false),
+      };
+
+    case 'STOP_EXPLORE_TIMER':
+      return {
+        ...state,
+        exploreTimer: {
+          running: false,
+          startedAt: 0,
+          elapsed: 0,
+          showCard: false,
+          description: '',
+        },
+      };
+
+    case 'SET_EXPLORE_TIMER_CARD':
+      return {
+        ...state,
+        exploreTimer: { ...state.exploreTimer, showCard: action.payload },
+      };
+
+    case 'DISMISS_REPORTS_SAMPLE_DATA':
+      return { ...state, reportsSampleDataEnabled: false };
+
     case 'TICK_TIMER':
       return {
         ...state,
@@ -144,14 +198,16 @@ function reducer(state: AppState, action: AppAction): AppState {
 
 const initialState: AppState = {
   step: 'input',
+  activeView: 'timer',
   inputText: '',
   draft: null,
   visibleDraft: null,
   isStreaming: false,
   confirmedTasks: [],
   scheduledBlocks: [],
-  exploreTimer: { running: false, startedAt: 0, elapsed: 0 },
+  exploreTimer: { running: false, startedAt: 0, elapsed: 0, showCard: false, description: '' },
   skippedOnboarding: false,
+  reportsSampleDataEnabled: true,
 };
 
 interface AppContextValue {

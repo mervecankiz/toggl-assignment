@@ -48,7 +48,7 @@
 .body {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 12px;
+  padding: 12px 12px 8px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -62,7 +62,15 @@
   font-size: 13px;
   color: var(--text-primary);
   line-height: 1.35;
-  cursor: default;
+  cursor: grab;
+}
+
+.taskCard:active {
+  cursor: grabbing;
+}
+
+.taskCardDragging {
+  opacity: 0.45;
 }
 
 .taskCard:hover {

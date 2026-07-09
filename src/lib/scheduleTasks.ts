@@ -3,7 +3,6 @@ import { PROJECT_COLORS } from './types';
 
 const WORK_START = 9;
 const WORK_END = 18;
-const BLOCK_HOURS = 1;
 
 function isWeekend(date: Date): boolean {
   const day = date.getDay();
@@ -20,46 +19,82 @@ function nextWorkingDay(date: Date): Date {
   return result;
 }
 
-function getNextWorkingSlot(from: Date = new Date()): Date {
-  const slot = new Date(from);
+function addMinutes(date: Date, minutes: number): Date {
+  return new Date(date.getTime() + minutes * 60_000);
+}
+
+function workDayStart(date: Date): Date {
+  const start = new Date(date);
+  start.setHours(WORK_START, 0, 0, 0);
+  return start;
+}
+
+function workDayEnd(date: Date): Date {
+  const end = new Date(date);
+  end.setHours(WORK_END, 0, 0, 0);
+  return end;
+}
+
+function normalizeToWorkingHours(cursor: Date): Date {
+  let slot = new Date(cursor);
 
   if (isWeekend(slot)) {
     return nextWorkingDay(slot);
   }
 
-  const hour = slot.getHours();
-  const minute = slot.getMinutes();
-
-  if (hour >= WORK_END || (hour < WORK_START)) {
-    if (hour >= WORK_END) {
-      return nextWorkingDay(slot);
-    }
-    slot.setHours(WORK_START, 0, 0, 0);
-    return slot;
+  const dayStart = workDayStart(slot);
+  if (slot < dayStart) {
+    return dayStart;
   }
 
-  if (minute > 0) {
-    slot.setHours(hour + 1, 0, 0, 0);
-  } else {
-    slot.setMinutes(0, 0, 0);
-  }
-
-  if (slot.getHours() >= WORK_END) {
+  if (slot >= workDayEnd(slot)) {
     return nextWorkingDay(slot);
   }
 
   return slot;
 }
 
-function advanceSlot(current: Date): Date {
-  const next = new Date(current);
-  next.setHours(next.getHours() + BLOCK_HOURS);
+function getInitialScheduleCursor(): Date {
+  const now = new Date();
+  let slot = normalizeToWorkingHours(now);
 
-  if (next.getHours() >= WORK_END) {
-    return nextWorkingDay(next);
+  if (slot.getTime() === now.getTime() || slot <= now) {
+    const remainder = now.getMinutes() % 15;
+    if (remainder !== 0 || now.getSeconds() > 0 || now.getMilliseconds() > 0) {
+      slot = addMinutes(now, 15 - remainder);
+      slot.setSeconds(0, 0);
+    } else {
+      slot = new Date(now);
+      slot.setSeconds(0, 0);
+    }
+    slot = normalizeToWorkingHours(slot);
   }
 
-  return next;
+  return slot;
+}
+
+export function estimateTaskDurationMinutes(task: string): number {
+  const name = task.toLowerCase();
+
+  if (/\b(call|kickoff|sync|meeting)\b/.test(name)) return 45;
+  if (/\b(review|triage|audit|bug)\b/.test(name)) return 60;
+  if (/\b(wireframe|design|draft|homepage|content|promotional|materials)\b/.test(name)) {
+    return 90;
+  }
+  if (/\b(report|writeup|documentation|deck|analysis|analyze)\b/.test(name)) return 75;
+  if (/\b(planning|migration|script|launch|campaign|schedule|timeline)\b/.test(name)) {
+    return 90;
+  }
+
+  return 60;
+}
+
+function gapAfterTaskMinutes(task: string, durationMinutes: number): number {
+  const name = task.toLowerCase();
+
+  if (durationMinutes >= 90) return 30;
+  if (/\b(call|kickoff|sync|meeting)\b/.test(name)) return 15;
+  return 20;
 }
 
 function collectTasks(
@@ -98,12 +133,17 @@ export function scheduleTasks(draft: SetupDraft): ScheduledBlock[] {
   });
 
   const blocks: ScheduledBlock[] = [];
-  let slot = getNextWorkingSlot();
+  let cursor = getInitialScheduleCursor();
 
   for (const { project, task } of tasks) {
-    const start = new Date(slot);
-    const end = new Date(slot);
-    end.setHours(end.getHours() + BLOCK_HOURS);
+    const durationMinutes = estimateTaskDurationMinutes(task);
+    let start = normalizeToWorkingHours(cursor);
+    let end = addMinutes(start, durationMinutes);
+
+    if (end > workDayEnd(start)) {
+      start = nextWorkingDay(start);
+      end = addMinutes(start, durationMinutes);
+    }
 
     blocks.push({
       id: `block-${++blockIdCounter}`,
@@ -116,7 +156,8 @@ export function scheduleTasks(draft: SetupDraft): ScheduledBlock[] {
       color: colorMap.get(project) ?? PROJECT_COLORS[0],
     });
 
-    slot = advanceSlot(slot);
+    cursor = addMinutes(end, gapAfterTaskMinutes(task, durationMinutes));
+    cursor = normalizeToWorkingHours(cursor);
   }
 
   return blocks;
@@ -133,4 +174,13 @@ export function formatDuration(ms: number): string {
 
 export function formatTimeShort(date: Date): string {
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+export function formatBlockDuration(start: Date, end: Date): string {
+  const mins = Math.round((end.getTime() - start.getTime()) / 60000);
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h > 0 && m > 0) return `${h}h ${m}m`;
+  if (h > 0) return `${h}h`;
+  return `${m}m`;
 }
