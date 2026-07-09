@@ -22,16 +22,11 @@
   display: flex;
 }
 
-.fillMain {
+.fillSegment {
   height: 100%;
-  background: #575456;
   flex-shrink: 0;
-}
-
-.fillRed {
-  height: 100%;
-  background: #e74c3c;
-  flex-shrink: 0;
+  min-width: 0;
+  transition: width 0.25s ease, background-color 0.25s ease;
 }
 
 .total {
@@ -45,6 +40,10 @@
   font-size: 12px;
   color: var(--text-muted);
   white-space: nowrap;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .link:hover {
