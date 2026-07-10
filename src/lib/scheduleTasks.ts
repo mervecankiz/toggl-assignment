@@ -125,7 +125,10 @@ function collectTasks(
 
 let blockIdCounter = 0;
 
-export function scheduleTasks(draft: SetupDraft): ScheduledBlock[] {
+export function scheduleTasks(
+  draft: SetupDraft,
+  options?: { reserveRunningTimerMinutes?: number },
+): ScheduledBlock[] {
   const tasks = collectTasks(draft.projects, draft.suggestedFirstTask);
   const colorMap = new Map<string, string>();
   draft.projects.forEach((p, i) => {
@@ -134,6 +137,11 @@ export function scheduleTasks(draft: SetupDraft): ScheduledBlock[] {
 
   const blocks: ScheduledBlock[] = [];
   let cursor = getInitialScheduleCursor();
+
+  if (options?.reserveRunningTimerMinutes) {
+    cursor = addMinutes(cursor, options.reserveRunningTimerMinutes);
+    cursor = normalizeToWorkingHours(cursor);
+  }
 
   for (const { project, task } of tasks) {
     const durationMinutes = estimateTaskDurationMinutes(task);

@@ -1,10 +1,17 @@
+.barWrapper {
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
 .bar {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px;
+  height: 49px;
+  padding: 6px 16px 6px 12px;
   border-bottom: 1px solid var(--border-default);
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .label {
@@ -36,17 +43,96 @@
   white-space: nowrap;
 }
 
+.linkWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .link {
   font-size: 12px;
-  color: var(--text-muted);
+  font-weight: 500;
+  color: var(--purple-primary);
   white-space: nowrap;
   border: none;
-  background: none;
-  padding: 0;
+  background: var(--purple-light);
+  padding: 5px 10px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .link:hover {
+  background: #eed8ea;
+  text-decoration: none;
+}
+
+.popover {
+  position: fixed;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  background: white;
+  box-shadow: 0 12px 32px rgba(19, 18, 19, 0.14);
+  z-index: 1000;
+}
+
+.popoverText {
+  margin: 0 0 12px;
+  padding-right: 26px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.popoverCloseBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 0 11px 0 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.popoverCloseBtn:hover {
+  background: var(--bg-hover);
   color: var(--text-secondary);
-  text-decoration: underline;
+}
+
+.popoverImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border-default);
+}
+
+.popoverCta {
+  display: inline-flex;
+  margin-top: 12px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 6px;
+  background: var(--purple-primary);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.popoverCta:hover {
+  opacity: 0.92;
 }

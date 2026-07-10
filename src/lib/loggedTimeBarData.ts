@@ -61,6 +61,10 @@ function getLoggedBlocks(state: AppState): ScheduledBlock[] {
   ];
 }
 
+export function hasLoggedCalendarBlocks(state: AppState): boolean {
+  return state.scheduledBlocks.some((block) => block.status === 'accepted');
+}
+
 export function buildLoggedTimeBarData(state: AppState): LoggedTimeBarData {
   const weekDays = getCenteredDaysAroundToday();
   const blocks = getLoggedBlocks(state).filter((block) =>

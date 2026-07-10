@@ -1,10 +1,18 @@
 import type { AppState } from './types';
+import { PROJECT_COLORS } from './types';
 import { buildSampleReportsSummary, mergeReportsSummaries } from './reportsSampleData';
+
+export interface ReportsDayProjectSegment {
+  project: string;
+  loggedMs: number;
+  color: string;
+}
 
 export interface ReportsDayPoint {
   label: string;
   shortLabel: string;
   loggedMs: number;
+  segments: ReportsDayProjectSegment[];
 }
 
 export interface ReportsProjectRow {
@@ -70,6 +78,86 @@ function getWeekMeta(): { weekLabel: string; weekNumber: string } {
   };
 }
 
+export function getProjectChartColor(project: string, projectNames: string[]): string {
+  if (project.toLowerCase().includes('without project')) {
+    return '#c8c6c8';
+  }
+
+  const index = projectNames.indexOf(project);
+  return PROJECT_COLORS[(index >= 0 ? index : 0) % PROJECT_COLORS.length];
+}
+
+function mergeDaySegments(
+  segments: ReportsDayProjectSegment[],
+): ReportsDayProjectSegment[] {
+  const map = new Map<string, ReportsDayProjectSegment>();
+
+  for (const segment of segments) {
+    const existing = map.get(segment.project);
+    if (existing) {
+      existing.loggedMs += segment.loggedMs;
+      continue;
+    }
+    map.set(segment.project, { ...segment });
+  }
+
+  return Array.from(map.values())
+    .filter((segment) => segment.loggedMs > 0)
+    .sort((a, b) => b.loggedMs - a.loggedMs);
+}
+
+function distributeProjectSegments(
+  dayTotalMs: number,
+  projects: { name: string; loggedMs: number; color: string }[],
+): ReportsDayProjectSegment[] {
+  if (dayTotalMs <= 0 || projects.length === 0) {
+    return [];
+  }
+
+  const totalProjectMs = projects.reduce((sum, project) => sum + project.loggedMs, 0);
+  if (totalProjectMs <= 0) {
+    return [];
+  }
+
+  let allocated = 0;
+
+  return projects
+    .map((project, index) => {
+      const isLast = index === projects.length - 1;
+      const loggedMs = isLast
+        ? Math.max(dayTotalMs - allocated, 0)
+        : Math.round((project.loggedMs / totalProjectMs) * dayTotalMs);
+
+      allocated += loggedMs;
+
+      return {
+        project: project.name,
+        loggedMs,
+        color: project.color,
+      };
+    })
+    .filter((segment) => segment.loggedMs > 0);
+}
+
+export { distributeProjectSegments };
+
+export function mergeDayPoints(
+  samplePoint: ReportsDayPoint,
+  livePoint?: ReportsDayPoint,
+): ReportsDayPoint {
+  const segments = mergeDaySegments([
+    ...samplePoint.segments,
+    ...(livePoint?.segments ?? []),
+  ]);
+
+  return {
+    label: samplePoint.label,
+    shortLabel: samplePoint.shortLabel,
+    loggedMs: samplePoint.loggedMs + (livePoint?.loggedMs ?? 0),
+    segments,
+  };
+}
+
 function isBillableProject(project: string): boolean {
   const name = project.toLowerCase();
   return !name.includes('internal') && !name.includes('without project');
@@ -80,6 +168,7 @@ function clientForProject(project: string): string {
   if (project === 'Client work') return 'client2';
   if (project === 'Acme Rebrand') return 'Acme Corp';
   if (project === 'Harlow Maintenance') return 'Harlow';
+  if (project === 'Northwind Contract') return 'Northwind Ltd';
   if (project === 'Marketing campaign') return '—';
   return '—';
 }
@@ -100,10 +189,10 @@ export function formatReportDuration(ms: number, precise = false): string {
 }
 
 export function formatReportAmount(amount: number): string {
-  return amount.toLocaleString('en-US', {
+  return `$${amount.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  });
+  })}`;
 }
 
 export function getChartMaxHours(dailyPoints: { loggedMs: number }[]): number {
@@ -148,21 +237,39 @@ export function buildLiveReportsSummary(state: AppState): ReportsSummary {
   }
 
   const dailyPoints: ReportsDayPoint[] = weekDays.map((day) => {
-    let dayMs = 0;
+    const segmentsMap = new Map<string, ReportsDayProjectSegment>();
 
     if (
       exploreMs > 0 &&
       state.exploreTimer.startedAt > 0 &&
       isSameDay(day, new Date(state.exploreTimer.startedAt))
     ) {
-      dayMs += exploreMs;
+      segmentsMap.set('Without project', {
+        project: 'Without project',
+        loggedMs: exploreMs,
+        color: '#c8c6c8',
+      });
     }
 
     for (const block of acceptedBlocks) {
-      if (isSameDay(block.start, day)) {
-        dayMs += block.end.getTime() - block.start.getTime();
+      if (!isSameDay(block.start, day)) continue;
+
+      const blockMs = block.end.getTime() - block.start.getTime();
+      const existing = segmentsMap.get(block.project);
+
+      if (existing) {
+        existing.loggedMs += blockMs;
+      } else {
+        segmentsMap.set(block.project, {
+          project: block.project,
+          loggedMs: blockMs,
+          color: block.color,
+        });
       }
     }
+
+    const segments = Array.from(segmentsMap.values()).sort((a, b) => b.loggedMs - a.loggedMs);
+    const dayMs = segments.reduce((sum, segment) => sum + segment.loggedMs, 0);
 
     const weekday = day.toLocaleDateString('en-US', { weekday: 'long' });
     const short = day.toLocaleDateString('en-US', { weekday: 'short' });
@@ -172,6 +279,7 @@ export function buildLiveReportsSummary(state: AppState): ReportsSummary {
       label: `${weekday} ${date}`,
       shortLabel: `${short} ${date}`,
       loggedMs: dayMs,
+      segments,
     };
   });
 

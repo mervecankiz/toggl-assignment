@@ -68,12 +68,15 @@ export function ProjectTreeEditor({
         <div key={project.id} className={styles.project}>
           <div className={styles.projectHeader}>
             <span className={styles.projectLabel}>Project</span>
-            <input
-              className={styles.projectNameInput}
-              value={project.name}
-              onChange={(e) => updateProjectName(pi, e.target.value)}
-              disabled={isStreaming}
-            />
+            {isStreaming ? (
+              <span className={styles.projectNameDisplay}>{project.name}</span>
+            ) : (
+              <input
+                className={styles.projectNameInput}
+                value={project.name}
+                onChange={(e) => updateProjectName(pi, e.target.value)}
+              />
+            )}
             {!isStreaming && (
               <button
                 type="button"
@@ -89,12 +92,15 @@ export function ProjectTreeEditor({
             {project.tasks.map((task, ti) => (
               <li key={task.id} className={styles.taskRow}>
                 <span className={styles.taskMarker} aria-hidden="true" />
-                <input
-                  className={styles.taskInput}
-                  value={task.name}
-                  onChange={(e) => updateTaskName(pi, ti, e.target.value)}
-                  disabled={isStreaming}
-                />
+                {isStreaming ? (
+                  <span className={styles.taskNameDisplay}>{task.name}</span>
+                ) : (
+                  <input
+                    className={styles.taskInput}
+                    value={task.name}
+                    onChange={(e) => updateTaskName(pi, ti, e.target.value)}
+                  />
+                )}
                 {!isStreaming && (
                   <button
                     type="button"
@@ -125,9 +131,6 @@ export function ProjectTreeEditor({
         </div>
         );
       })}
-      {isStreaming && draft.projects.some((project) => project.tasks.length > 0) && (
-        <span className={styles.streamingCursor} aria-hidden="true" />
-      )}
       {!isStreaming && (
         <div className={styles.editorActions}>
           <button type="button" className={styles.addProjectBtn} onClick={addProject}>

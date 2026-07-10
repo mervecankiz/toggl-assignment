@@ -109,13 +109,19 @@ export function CalendarBlock({
         <div className={styles.runningNowLine} aria-hidden="true" />
         <button
           type="button"
-          className={styles.runningExploreBar}
+          className={styles.runningPlayBtn}
           onClick={openCard}
           aria-label="Open running timer"
         >
           <span className={styles.runningPlayIcon} aria-hidden="true">
             ▶
           </span>
+        </button>
+        <button
+          type="button"
+          className={styles.runningExploreBar}
+          onClick={openCard}
+        >
           <span className={styles.runningExploreName}>{block.task}</span>
         </button>
 

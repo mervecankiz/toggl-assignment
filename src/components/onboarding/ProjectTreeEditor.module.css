@@ -45,9 +45,17 @@
   cursor: text;
 }
 
+.projectNameDisplay {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .projectNameInput:disabled,
 .taskInput:disabled {
-  cursor: not-allowed;
+  cursor: default;
   opacity: 0.7;
 }
 
@@ -129,8 +137,16 @@
   color: var(--text-primary);
 }
 
+.taskNameDisplay {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
 .taskInput:disabled {
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .deleteTask {
@@ -258,20 +274,5 @@
   }
   to {
     opacity: 1;
-  }
-}
-
-.streamingCursor {
-  display: inline-block;
-  width: 2px;
-  height: 14px;
-  background: var(--purple-primary);
-  margin-left: 2px;
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
   }
 }

@@ -1,4 +1,5 @@
 import type { ReportsDayPoint, ReportsProjectRow, ReportsSummary } from './reportsData';
+import { distributeProjectSegments, getProjectChartColor, mergeDayPoints } from './reportsData';
 
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
@@ -82,7 +83,7 @@ function getWeekMeta(): { weekLabel: string; weekNumber: string } {
   );
 
   return {
-    weekLabel: 'This week',
+    weekLabel: 'Next week',
     weekNumber: `W${weekNum}`,
   };
 }
@@ -96,18 +97,6 @@ export function buildSampleReportsSummary(): ReportsSummary {
   const weekDays = getWeekDays();
   const { weekLabel, weekNumber } = getWeekMeta();
 
-  const dailyPoints: ReportsDayPoint[] = weekDays.map((day, index) => {
-    const weekday = day.toLocaleDateString('en-US', { weekday: 'long' });
-    const short = day.toLocaleDateString('en-US', { weekday: 'short' });
-    const date = `${day.getMonth() + 1}/${day.getDate()}`;
-
-    return {
-      label: `${weekday} ${date}`,
-      shortLabel: `${short} ${date}`,
-      loggedMs: SAMPLE_DAILY_MS[index] ?? 0,
-    };
-  });
-
   const projectRows: ReportsProjectRow[] = SAMPLE_PROJECT_ROWS.map((row, index) => ({
     id: `sample-project-row-${index}`,
     name: row.name,
@@ -117,6 +106,29 @@ export function buildSampleReportsSummary(): ReportsSummary {
     taskCount: row.taskCount,
     amount: projectAmount(row.loggedMs, row.hourlyRate, row.billable),
   }));
+
+  const projectNames = projectRows.map((row) => row.name);
+  const projectWeights = projectRows
+    .filter((row) => row.loggedMs > 0)
+    .map((row) => ({
+      name: row.name,
+      loggedMs: row.loggedMs,
+      color: getProjectChartColor(row.name, projectNames),
+    }));
+
+  const dailyPoints: ReportsDayPoint[] = weekDays.map((day, index) => {
+    const weekday = day.toLocaleDateString('en-US', { weekday: 'long' });
+    const short = day.toLocaleDateString('en-US', { weekday: 'short' });
+    const date = `${day.getMonth() + 1}/${day.getDate()}`;
+    const loggedMs = SAMPLE_DAILY_MS[index] ?? 0;
+
+    return {
+      label: `${weekday} ${date}`,
+      shortLabel: `${short} ${date}`,
+      loggedMs,
+      segments: distributeProjectSegments(loggedMs, projectWeights),
+    };
+  });
 
   const loggedMs = SAMPLE_DAILY_MS.reduce((sum, ms) => sum + ms, 0);
   const billableMs = projectRows
@@ -143,10 +155,9 @@ export function mergeReportsSummaries(
   sample: ReportsSummary,
   live: ReportsSummary,
 ): ReportsSummary {
-  const dailyPoints = sample.dailyPoints.map((point, index) => ({
-    ...point,
-    loggedMs: point.loggedMs + (live.dailyPoints[index]?.loggedMs ?? 0),
-  }));
+  const dailyPoints = sample.dailyPoints.map((point, index) =>
+    mergeDayPoints(point, live.dailyPoints[index]),
+  );
 
   const projectMap = new Map<string, ReportsProjectRow>();
 
@@ -168,8 +179,8 @@ export function mergeReportsSummaries(
   const daysWithData = dailyPoints.filter((point) => point.loggedMs > 0).length || 1;
 
   return {
-    weekLabel: live.weekLabel,
-    weekNumber: live.weekNumber,
+    weekLabel: sample.weekLabel,
+    weekNumber: sample.weekNumber,
     loggedMs,
     billableMs,
     billablePercent: loggedMs > 0 ? (billableMs / loggedMs) * 100 : 0,

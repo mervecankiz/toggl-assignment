@@ -16,7 +16,11 @@ import { CalendarBlock } from './CalendarBlock';
 import { CurrentTimeIndicator } from './CurrentTimeIndicator';
 import styles from './CalendarGrid.module.css';
 
-const EXPLORE_BLOCK_ID = 'explore-running';
+import {
+  EXPLORE_BLOCK_ID,
+  layoutCalendarBlocks,
+  RUNNING_EXPLORE_HEIGHT,
+} from '../../lib/calendarLayout';
 const DEMO_PROJECT = 'Marketing campaign';
 
 let panelBlockCounter = 0;
@@ -229,6 +233,16 @@ export function CalendarGrid() {
     }
   }, []);
 
+  const blockLayoutsByDay = useMemo(() => {
+    const layouts = new Map<number, Map<string, { top: number; height: number }>>();
+
+    blocksByDay.forEach((dayBlocks, dayIndex) => {
+      layouts.set(dayIndex, layoutCalendarBlocks(dayBlocks));
+    });
+
+    return layouts;
+  }, [blocksByDay]);
+
   const today = new Date();
   const todayColumnIndex = weekDays.findIndex((day) => isSameDay(day, today));
 
@@ -288,20 +302,25 @@ export function CalendarGrid() {
                 )}
 
                 {(blocksByDay.get(dayIndex) ?? []).map((block) => {
+                  const isExploreRunning = block.id === EXPLORE_BLOCK_ID;
+                  const layout = blockLayoutsByDay.get(dayIndex)?.get(block.id);
                   const startHour =
                     block.start.getHours() + block.start.getMinutes() / 60;
                   const endHour =
                     block.end.getHours() + block.end.getMinutes() / 60;
-                  const top = (startHour - GRID_START) * HOUR_HEIGHT;
-                  const height = Math.max((endHour - startHour) * HOUR_HEIGHT, 28);
-                  const isExploreRunning = block.id === EXPLORE_BLOCK_ID;
+                  const top = layout?.top ?? (startHour - GRID_START) * HOUR_HEIGHT;
+                  const height =
+                    layout?.height ??
+                    (isExploreRunning
+                      ? RUNNING_EXPLORE_HEIGHT
+                      : Math.max((endHour - startHour) * HOUR_HEIGHT, 28));
 
                   return (
                     <CalendarBlock
                       key={block.id}
                       block={block}
                       top={top}
-                      height={isExploreRunning ? 32 : height}
+                      height={height}
                       runningExplore={isExploreRunning}
                       elapsedMs={isExploreRunning ? exploreTimer.elapsed : undefined}
                       draggable={!isExploreRunning}

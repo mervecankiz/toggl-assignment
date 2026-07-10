@@ -1,11 +1,67 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useAppState } from '../../hooks/useAppState';
-import { buildReportsSummary, formatReportAmount, formatReportDuration, getChartMaxHours, getChartYTicks } from '../../lib/reportsData';
+import { buildReportsSummary, formatReportAmount, formatReportDuration, getChartMaxHours, getChartYTicks, getProjectChartColor } from '../../lib/reportsData';
+import type { ReportsDayPoint } from '../../lib/reportsData';
+import { ReportsTrackingPrompt } from './ReportsTrackingPrompt';
 import styles from './ReportsView.module.css';
 
 const CHART_HEIGHT = 220;
+const SEGMENT_GAP = 2;
+const SEGMENT_RADIUS = 4;
 
-function ReportsChart({ dailyPoints }: { dailyPoints: { shortLabel: string; loggedMs: number }[] }) {
+function FilterIcon() {
+  return (
+    <svg
+      className={styles.filterIcon}
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M2.5 3.5h11L10 9.25v4.75l-4 1v-5.75L2.5 3.5z"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function SelectChevron() {
+  return (
+    <svg
+      className={styles.selectChevron}
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3.293 6.792C3.12082 6.61981 3.01739 6.39071 3.00211 6.14768C2.98683 5.90466 3.06075 5.6644 3.21 5.472L3.293 5.378C3.48053 5.19053 3.73484 5.08521 4 5.08521C4.26516 5.08521 4.51947 5.19053 4.707 5.378L8 8.67L11.293 5.378C11.4652 5.20582 11.6943 5.10239 11.9373 5.08711C12.1803 5.07183 12.4206 5.14575 12.613 5.295L12.707 5.378C12.8945 5.56553 12.9998 5.81984 12.9998 6.085C12.9998 6.35016 12.8945 6.60447 12.707 6.792L8.707 10.793C8.51947 10.9805 8.26516 11.0858 8 11.0858C7.73484 11.0858 7.48053 10.9805 7.293 10.793L3.293 6.792Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function ReportsChart({ dailyPoints }: { dailyPoints: ReportsDayPoint[] }) {
+  const chartWrapRef = useRef<HTMLDivElement>(null);
+  const chartSvgRef = useRef<SVGSVGElement>(null);
+  const [hoveredSegment, setHoveredSegment] = useState<{
+    dayLabel: string;
+    project: string;
+    color: string;
+    segmentMs: number;
+    dayTotalMs: number;
+    x: number;
+    y: number;
+  } | null>(null);
+
   const chartMaxHours = getChartMaxHours(dailyPoints);
   const yTicks = getChartYTicks(chartMaxHours);
   const width = 720;
@@ -17,24 +73,106 @@ function ReportsChart({ dailyPoints }: { dailyPoints: { shortLabel: string; logg
   const slotWidth = innerWidth / barCount;
   const barWidth = Math.min(44, slotWidth * 0.55);
 
+  const legendItems = useMemo(() => {
+    const map = new Map<string, { project: string; color: string; loggedMs: number }>();
+
+    for (const point of dailyPoints) {
+      for (const segment of point.segments) {
+        const existing = map.get(segment.project);
+        if (existing) {
+          existing.loggedMs += segment.loggedMs;
+          continue;
+        }
+        map.set(segment.project, {
+          project: segment.project,
+          color: segment.color,
+          loggedMs: segment.loggedMs,
+        });
+      }
+    }
+
+    return Array.from(map.values()).sort((a, b) => b.loggedMs - a.loggedMs);
+  }, [dailyPoints]);
+
   const bars = dailyPoints.map((point, index) => {
-    const ratio = Math.min(point.loggedMs / maxMs, 1);
-    const barHeight = ratio * innerHeight;
     const x = padding.left + index * slotWidth + (slotWidth - barWidth) / 2;
-    const y = padding.top + innerHeight - barHeight;
+    const totalRatio = Math.min(point.loggedMs / maxMs, 1);
+    const totalHeight = point.loggedMs > 0 ? Math.max(totalRatio * innerHeight, 3) : 0;
+    const baseY = padding.top + innerHeight - totalHeight;
+
+    const segmentCount = point.segments.length;
+    const totalGap = segmentCount > 1 ? (segmentCount - 1) * SEGMENT_GAP : 0;
+    const segmentsHeight = Math.max(totalHeight - totalGap, 0);
+
+    let cursorY = baseY + totalHeight;
+    const segments = point.segments.map((segment, segmentIndex) => {
+      const segmentHeight =
+        point.loggedMs > 0 && segmentsHeight > 0
+          ? Math.max(
+              (segment.loggedMs / point.loggedMs) * segmentsHeight,
+              segment.loggedMs > 0 ? 4 : 0,
+            )
+          : 0;
+
+      cursorY -= segmentHeight;
+      const y = cursorY;
+
+      if (segmentIndex < point.segments.length - 1) {
+        cursorY -= SEGMENT_GAP;
+      }
+
+      return {
+        key: `${point.shortLabel}-${segment.project}`,
+        x,
+        y,
+        width: barWidth,
+        height: segmentHeight,
+        color: segment.color,
+        project: segment.project,
+        loggedMs: segment.loggedMs,
+      };
+    });
 
     return {
-      x,
-      y,
-      width: barWidth,
-      height: point.loggedMs > 0 ? Math.max(barHeight, 3) : 0,
       label: point.shortLabel,
+      dayTotalMs: point.loggedMs,
+      x,
+      segments,
     };
   });
 
+  const showSegmentTooltip = (
+    bar: (typeof bars)[number],
+    segment: (typeof bars)[number]['segments'][number],
+  ) => {
+    const svg = chartSvgRef.current;
+    const wrap = chartWrapRef.current;
+    if (!svg || !wrap) return;
+
+    const svgRect = svg.getBoundingClientRect();
+    const wrapRect = wrap.getBoundingClientRect();
+    const scaleX = svgRect.width / width;
+    const scaleY = svgRect.height / CHART_HEIGHT;
+
+    setHoveredSegment({
+      dayLabel: bar.label,
+      project: segment.project,
+      color: segment.color,
+      segmentMs: segment.loggedMs,
+      dayTotalMs: bar.dayTotalMs,
+      x: (segment.x + segment.width / 2) * scaleX + svgRect.left - wrapRect.left,
+      y: segment.y * scaleY + svgRect.top - wrapRect.top,
+    });
+  };
+
   return (
-    <div className={styles.chartWrap}>
-      <svg viewBox={`0 0 ${width} ${CHART_HEIGHT}`} className={styles.chartSvg} aria-hidden="true">
+    <div className={styles.chartWrap} ref={chartWrapRef}>
+      <svg
+        ref={chartSvgRef}
+        viewBox={`0 0 ${width} ${CHART_HEIGHT}`}
+        className={styles.chartSvg}
+        aria-hidden="true"
+      >
         {yTicks.map((hours) => {
           const y = padding.top + innerHeight - (hours / chartMaxHours) * innerHeight;
           return (
@@ -53,22 +191,28 @@ function ReportsChart({ dailyPoints }: { dailyPoints: { shortLabel: string; logg
           );
         })}
 
-        {bars.map((bar) => (
-          <rect
-            key={bar.label}
-            x={bar.x}
-            y={bar.y}
-            width={bar.width}
-            height={bar.height}
-            rx={4}
-            className={styles.chartBar}
-          />
-        ))}
+        {bars.flatMap((bar) =>
+          bar.segments.map((segment) => (
+            <rect
+              key={segment.key}
+              x={segment.x}
+              y={segment.y}
+              width={segment.width}
+              height={segment.height}
+              rx={SEGMENT_RADIUS}
+              ry={SEGMENT_RADIUS}
+              fill={segment.color}
+              className={styles.chartBar}
+              onMouseEnter={() => showSegmentTooltip(bar, segment)}
+              onMouseLeave={() => setHoveredSegment(null)}
+            />
+          )),
+        )}
 
         {bars.map((bar) => (
           <text
             key={`${bar.label}-x`}
-            x={bar.x + bar.width / 2}
+            x={bar.x + barWidth / 2}
             y={CHART_HEIGHT - 6}
             className={styles.chartXLabel}
             textAnchor="middle"
@@ -77,10 +221,44 @@ function ReportsChart({ dailyPoints }: { dailyPoints: { shortLabel: string; logg
           </text>
         ))}
       </svg>
-      <div className={styles.chartLegend}>
-        <span className={styles.chartLegendBar} />
-        Logged time
-      </div>
+      {hoveredSegment && (
+        <div
+          className={styles.chartTooltip}
+          style={{ left: hoveredSegment.x, top: hoveredSegment.y }}
+          role="tooltip"
+        >
+          <span className={styles.chartTooltipDay}>{hoveredSegment.dayLabel}</span>
+          <div className={styles.chartTooltipRow}>
+            <span
+              className={styles.chartTooltipSwatch}
+              style={{ backgroundColor: hoveredSegment.color }}
+              aria-hidden="true"
+            />
+            <span className={styles.chartTooltipProject}>{hoveredSegment.project}</span>
+            <span className={styles.chartTooltipValue}>
+              {formatReportDuration(hoveredSegment.segmentMs, true)}
+            </span>
+          </div>
+          <div className={styles.chartTooltipTotal}>
+            <span>Total</span>
+            <span>{formatReportDuration(hoveredSegment.dayTotalMs, true)}</span>
+          </div>
+        </div>
+      )}
+      {legendItems.length > 0 && (
+        <div className={styles.chartLegend}>
+          {legendItems.map((item) => (
+            <span key={item.project} className={styles.chartLegendItem}>
+              <span
+                className={styles.chartLegendSwatch}
+                style={{ backgroundColor: item.color }}
+                aria-hidden="true"
+              />
+              {item.project}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -89,11 +267,16 @@ export function ReportsView() {
   const { state, dispatch } = useAppState();
   const [activeTab, setActiveTab] = useState<'summary' | 'timelogs'>('summary');
   const summary = useMemo(() => buildReportsSummary(state), [state]);
+  const projectNames = useMemo(
+    () => summary.projectRows.map((row) => row.name),
+    [summary.projectRows],
+  );
 
   const dismissSampleData = () => dispatch({ type: 'DISMISS_REPORTS_SAMPLE_DATA' });
 
   return (
     <div className={styles.view}>
+      <ReportsTrackingPrompt />
       <div className={styles.header}>
         <h1 className={styles.title}>Reports</h1>
         <div className={styles.headerActions}>
@@ -144,7 +327,8 @@ export function ReportsView() {
           </button>
         </div>
         <button type="button" className={styles.filtersBtn}>
-          <span className={styles.filterIcon}>⛃</span> Filters
+          <FilterIcon />
+          Filters
         </button>
       </div>
 
@@ -155,7 +339,7 @@ export function ReportsView() {
               <div className={styles.sampleBannerContent}>
                 <span className={styles.sampleBadge}>Sample</span>
                 <span className={styles.sampleBannerText}>
-                  Preview data for this week — not from your actual time entries.
+                  Sample preview. Start tracking to see your own week here.
                 </span>
               </div>
               <button type="button" className={styles.sampleBannerAction} onClick={dismissSampleData}>
@@ -198,7 +382,8 @@ export function ReportsView() {
             <div className={styles.chartHeader}>
               <h2 className={styles.sectionTitle}>Logged time</h2>
               <button type="button" className={styles.chartSelect}>
-                Logged time ▾
+                Logged time
+                <SelectChevron />
               </button>
             </div>
             <ReportsChart dailyPoints={summary.dailyPoints} />
@@ -210,11 +395,13 @@ export function ReportsView() {
               <div className={styles.tableControls}>
                 <span className={styles.tableControlLabel}>Breakdown by:</span>
                 <button type="button" className={styles.tableSelect}>
-                  Project ▾
+                  Project
+                  <SelectChevron />
                 </button>
                 <span className={styles.tableControlLabel}>and:</span>
                 <button type="button" className={styles.tableSelect}>
-                  Task ▾
+                  Task
+                  <SelectChevron />
                 </button>
               </div>
             </div>
@@ -250,9 +437,18 @@ export function ReportsView() {
                       return (
                         <tr key={row.id}>
                           <td>
-                            <span className={styles.expandIcon}>›</span>
-                            {row.name}{' '}
-                            <span className={styles.rowCount}>({row.taskCount})</span>
+                            <span className={styles.projectNameCell}>
+                              <span className={styles.expandIcon}>›</span>
+                              <span
+                                className={styles.projectColorSwatch}
+                                style={{
+                                  backgroundColor: getProjectChartColor(row.name, projectNames),
+                                }}
+                                aria-hidden="true"
+                              />
+                              {row.name}{' '}
+                              <span className={styles.rowCount}>({row.taskCount})</span>
+                            </span>
                           </td>
                           <td>{row.client}</td>
                           <td>{formatReportDuration(row.loggedMs, true)}</td>
@@ -291,7 +487,7 @@ export function ReportsView() {
               <div className={styles.sampleBannerContent}>
                 <span className={styles.sampleBadge}>Sample</span>
                 <span className={styles.sampleBannerText}>
-                  Preview data for this week — not from your actual time entries.
+                  Sample preview. Start tracking to see your own week here.
                 </span>
               </div>
               <button type="button" className={styles.sampleBannerAction} onClick={dismissSampleData}>

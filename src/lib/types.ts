@@ -65,6 +65,9 @@ export interface AppState {
   exploreTimer: ExploreTimer;
   skippedOnboarding: boolean;
   reportsSampleDataEnabled: boolean;
+  reportsPreviewPopoverDismissed: boolean;
+  reportsTrackingPromptPending: boolean;
+  reportsTrackingPromptDismissed: boolean;
 }
 
 export type StreamEvent =
@@ -90,12 +93,15 @@ export type AppAction =
   | { type: 'STOP_EXPLORE_TIMER' }
   | { type: 'SET_EXPLORE_TIMER_CARD'; payload: boolean }
   | { type: 'DISMISS_REPORTS_SAMPLE_DATA' }
+  | { type: 'DISMISS_REPORTS_PREVIEW_POPOVER' }
+  | { type: 'SCHEDULE_REPORTS_TRACKING_PROMPT' }
+  | { type: 'DISMISS_REPORTS_TRACKING_PROMPT' }
   | { type: 'TICK_TIMER'; payload: number };
 
 export const PROJECT_COLORS = [
-  '#a84c9d',
+  '#6bbf8a',
   '#5b9bd5',
   '#e8a838',
-  '#6bbf8a',
+  '#a84c9d',
   '#e07a7a',
 ];

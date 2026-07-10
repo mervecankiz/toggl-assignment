@@ -189,6 +189,19 @@ function reducer(state: AppState, action: AppAction): AppState {
     case 'DISMISS_REPORTS_SAMPLE_DATA':
       return { ...state, reportsSampleDataEnabled: false };
 
+    case 'DISMISS_REPORTS_PREVIEW_POPOVER':
+      return { ...state, reportsPreviewPopoverDismissed: true };
+
+    case 'SCHEDULE_REPORTS_TRACKING_PROMPT':
+      return { ...state, reportsTrackingPromptPending: true };
+
+    case 'DISMISS_REPORTS_TRACKING_PROMPT':
+      return {
+        ...state,
+        reportsTrackingPromptPending: false,
+        reportsTrackingPromptDismissed: true,
+      };
+
     case 'TICK_TIMER':
       return {
         ...state,
@@ -212,6 +225,9 @@ const initialState: AppState = {
   exploreTimer: { running: false, startedAt: 0, elapsed: 0, showCard: false, description: '' },
   skippedOnboarding: false,
   reportsSampleDataEnabled: true,
+  reportsPreviewPopoverDismissed: false,
+  reportsTrackingPromptPending: false,
+  reportsTrackingPromptDismissed: false,
 };
 
 interface AppContextValue {
@@ -228,7 +244,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const confirmDraft = () => {
     if (!state.draft) return;
     const tasks = tasksFromDraft(state.draft);
-    const blocks = scheduleTasks(state.draft);
+    const blocks = scheduleTasks(state.draft, { reserveRunningTimerMinutes: 45 });
     dispatch({ type: 'CONFIRM_DRAFT', payload: { tasks, blocks } });
   };
 

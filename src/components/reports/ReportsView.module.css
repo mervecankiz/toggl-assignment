@@ -193,7 +193,9 @@
 }
 
 .filterIcon {
-  font-size: 14px;
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--text-muted);
 }
 
 .metrics {
@@ -257,14 +259,25 @@
 
 .chartSelect,
 .tableSelect {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 10px;
   border: 1px solid var(--border-default);
   border-radius: 8px;
   font-size: 13px;
   color: var(--text-secondary);
+  background: white;
+  cursor: pointer;
+}
+
+.selectChevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
 }
 
 .chartWrap {
+  position: relative;
   width: 100%;
 }
 
@@ -285,24 +298,99 @@
 }
 
 .chartBar {
-  fill: var(--purple-primary);
+  transition: opacity 0.15s ease;
+  cursor: pointer;
 }
 
-.chartLegend {
+.chartBar:hover {
+  opacity: 0.85;
+}
+
+.chartTooltip {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, calc(-100% - 8px));
+  background: white;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(19, 18, 19, 0.1);
+  padding: 8px 10px;
+  min-width: 148px;
+  pointer-events: none;
+}
+
+.chartTooltipDay {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.chartTooltipRow {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 6px;
+}
+
+.chartTooltipSwatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.chartTooltipProject {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chartTooltipValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.chartTooltipTotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-default);
   font-size: 12px;
   color: var(--text-secondary);
 }
 
-.chartLegendBar {
-  width: 12px;
-  height: 12px;
-  background: var(--purple-primary);
+.chartLegend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 16px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.chartLegendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chartLegendSwatch {
+  width: 10px;
+  height: 10px;
   border-radius: 2px;
+  flex-shrink: 0;
 }
 
 .tableControls {
@@ -347,7 +435,20 @@
 
 .expandIcon {
   color: var(--text-muted);
-  margin-right: 6px;
+  margin-right: 2px;
+}
+
+.projectNameCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.projectColorSwatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
 }
 
 .rowCount {
